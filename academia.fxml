@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="co.edu.poli.actividad10.controlador.ControladorFormulario"
+            prefWidth="700" prefHeight="600">
+
+    <VBox spacing="15" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10" >
+
+        <Label text="Gestión Academia" style="-fx-text-fill: #0901eb;" alignment="CENTER">
+            <font><Font size="36"/></font>
+        </Label>
+
+        <GridPane hgap="15" vgap="10">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="30"/>
+                <ColumnConstraints percentWidth="70"/>
+            </columnConstraints>
+
+            <Label text="Código:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtcodigo" promptText="Código" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <Label text="Nombre:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtNombre" promptText="Nombre" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <Label text="Recurso Externo:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtRecursoExterno" promptText="Recurso Externo" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <Label text="Duración:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtduracion" promptText="Duración" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+            <Label text="Fecha Realización:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            <TextField fx:id="txtFechaDeRealizacion" promptText="Fecha Realización" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+            <Label text="Nivel Práctico:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+            <ChoiceBox fx:id="comboNivelPractivo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+            <Label text="Asistió:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+            <CheckBox fx:id="checkAsistio" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        </GridPane>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Crear" onAction="#Create"/>
+            <Button text="Ver Todas" onAction="#SeeAll"/>
+            <Button text="Actualizar" onAction="#Update"/>
+            <Button text="Eliminar" onAction="#Delete"/>
+            <Button text="Serializar" onAction="#serialize"/>
+            <Button text="Deserializar" onAction="#Deserialize"/>
+        </HBox>
+
+        <TextArea fx:id="textAreaSalida" editable="false" prefHeight="200"/>
+    </VBox>
+</AnchorPane>
