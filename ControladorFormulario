@@ -1,0 +1,253 @@
+package co.edu.poli.actividad10.controlador;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ControladorFormulario {
+
+    @FXML private TextField txtcodigo;
+    @FXML private ChoiceBox<String> comboNivelPractivo;
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtRecursoExterno;
+    @FXML private TextField txtduracion;
+    @FXML private TextField txtFechaDeRealizacion;
+    @FXML private CheckBox checkAsistio;
+    @FXML private TextArea textAreaSalida;
+
+    // Lista para almacenar objetos de ejemplo (puedes adaptar para guardar objetos de modelo)
+    private final List<ActividadAcademica> listaActividades = new ArrayList<>();
+
+    @FXML
+    public void initialize() {
+        // Inicializar la ChoiceBox con algunos valores de ejemplo
+        ObservableList<String> niveles = FXCollections.observableArrayList("Básico", "Intermedio", "Avanzado");
+        comboNivelPractivo.setItems(niveles);
+        comboNivelPractivo.getSelectionModel().selectFirst();
+
+        // Limpia el área de texto al iniciar
+        textAreaSalida.clear();
+    }
+
+    // Crear una nueva actividad y agregarla a la lista
+    @FXML
+    public void Create(ActionEvent event) {
+        try {
+            ActividadAcademica actividad = obtenerActividadDesdeCampos();
+            if (buscarPorCodigo(actividad.getCodigo()) != null) {
+                textAreaSalida.setText("Ya existe una actividad con código: " + actividad.getCodigo());
+                return;
+            }
+            listaActividades.add(actividad);
+            textAreaSalida.setText("Actividad creada:\n" + actividad);
+            limpiarCampos();
+        } catch (Exception e) {
+            textAreaSalida.setText("Error al crear la actividad: " + e.getMessage());
+        }
+    }
+
+    // Ver la actividad según el código ingresado
+    @FXML
+    public void Add(ActionEvent event) {
+        String codigo = txtcodigo.getText();
+        if (codigo.isEmpty()) {
+            textAreaSalida.setText("Ingrese un código para buscar.");
+            return;
+        }
+        ActividadAcademica actividad = buscarPorCodigo(codigo);
+        if (actividad != null) {
+            textAreaSalida.setText("Actividad encontrada:\n" + actividad);
+            cargarActividadEnCampos(actividad);
+        } else {
+            textAreaSalida.setText("No se encontró actividad con código: " + codigo);
+        }
+    }
+
+    // Mostrar todas las actividades
+    @FXML
+    public void SeeAll(ActionEvent event) {
+        if (listaActividades.isEmpty()) {
+            textAreaSalida.setText("No hay actividades registradas.");
+            return;
+        }
+        StringBuilder sb = new StringBuilder("Listado de actividades:\n");
+        for (ActividadAcademica act : listaActividades) {
+            sb.append(act).append("\n");
+        }
+        textAreaSalida.setText(sb.toString());
+    }
+
+    // Actualizar una actividad existente por código
+    @FXML
+    public void Update(ActionEvent event) {
+        try {
+            String codigo = txtcodigo.getText();
+            if (codigo.isEmpty()) {
+                textAreaSalida.setText("Ingrese un código para actualizar.");
+                return;
+            }
+            ActividadAcademica actividadExistente = buscarPorCodigo(codigo);
+            if (actividadExistente == null) {
+                textAreaSalida.setText("No se encontró actividad con código: " + codigo);
+                return;
+            }
+            // Actualizar campos
+            ActividadAcademica nuevaActividad = obtenerActividadDesdeCampos();
+            listaActividades.remove(actividadExistente);
+            listaActividades.add(nuevaActividad);
+            textAreaSalida.setText("Actividad actualizada:\n" + nuevaActividad);
+            limpiarCampos();
+        } catch (Exception e) {
+            textAreaSalida.setText("Error al actualizar la actividad: " + e.getMessage());
+        }
+    }
+
+    // Eliminar una actividad por código
+    @FXML
+    public void Delete(ActionEvent event) {
+        String codigo = txtcodigo.getText();
+        if (codigo.isEmpty()) {
+            textAreaSalida.setText("Ingrese un código para eliminar.");
+            return;
+        }
+        ActividadAcademica actividad = buscarPorCodigo(codigo);
+        if (actividad != null) {
+            listaActividades.remove(actividad);
+            textAreaSalida.setText("Actividad eliminada con código: " + codigo);
+            limpiarCampos();
+        } else {
+            textAreaSalida.setText("No se encontró actividad con código: " + codigo);
+        }
+    }
+
+    // Serializar - aquí puedes implementar la lógica para guardar en archivo
+    @FXML
+    public void serialize(ActionEvent event) {
+        // Implementar serialización real aquí
+        textAreaSalida.setText("Serialización no implementada en este ejemplo.");
+    }
+
+    // Deserializar - aquí puedes implementar la lógica para cargar desde archivo
+    @FXML
+    public void Deserialize(ActionEvent event) {
+        // Implementar deserialización real aquí
+        textAreaSalida.setText("Deserialización no implementada en este ejemplo.");
+    }
+
+    // --- Métodos auxiliares ---
+
+    // Buscar actividad por código
+    private ActividadAcademica buscarPorCodigo(String codigo) {
+        for (ActividadAcademica a : listaActividades) {
+            if (a.getCodigo().equals(codigo)) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    // Obtener actividad desde campos del formulario
+    private ActividadAcademica obtenerActividadDesdeCampos() throws Exception {
+        String codigo = txtcodigo.getText().trim();
+        String nivel = comboNivelPractivo.getValue();
+        String nombre = txtNombre.getText().trim();
+        String recurso = txtRecursoExterno.getText().trim();
+        String duracion = txtduracion.getText().trim();
+        String fecha = txtFechaDeRealizacion.getText().trim();
+        boolean asistio = checkAsistio.isSelected();
+
+        if (codigo.isEmpty() || nombre.isEmpty()) {
+            throw new Exception("Código y Nombre son obligatorios.");
+        }
+
+        return new ActividadAcademica(codigo, nivel, nombre, recurso, duracion, fecha, asistio);
+    }
+
+    // Cargar actividad en campos del formulario
+    private void cargarActividadEnCampos(ActividadAcademica actividad) {
+        txtcodigo.setText(actividad.getCodigo());
+        comboNivelPractivo.setValue(actividad.getNivelPractico());
+        txtNombre.setText(actividad.getNombre());
+        txtRecursoExterno.setText(actividad.getRecursoExterno());
+        txtduracion.setText(actividad.getDuracion());
+        txtFechaDeRealizacion.setText(actividad.getFechaRealizacion());
+        checkAsistio.setSelected(actividad.isAsistio());
+    }
+
+    // Limpiar campos del formulario
+    private void limpiarCampos() {
+        txtcodigo.clear();
+        comboNivelPractivo.getSelectionModel().selectFirst();
+        txtNombre.clear();
+        txtRecursoExterno.clear();
+        txtduracion.clear();
+        txtFechaDeRealizacion.clear();
+        checkAsistio.setSelected(false);
+    }
+
+    // Clase interna de ejemplo para modelo (puedes cambiarla por tu clase real)
+    public static class ActividadAcademica {
+        private final String codigo;
+        private final String nivelPractico;
+        private final String nombre;
+        private final String recursoExterno;
+        private final String duracion;
+        private final String fechaRealizacion;
+        private final boolean asistio;
+
+        public ActividadAcademica(String codigo, String nivelPractico, String nombre, String recursoExterno,
+                                 String duracion, String fechaRealizacion, boolean asistio) {
+            this.codigo = codigo;
+            this.nivelPractico = nivelPractico;
+            this.nombre = nombre;
+            this.recursoExterno = recursoExterno;
+            this.duracion = duracion;
+            this.fechaRealizacion = fechaRealizacion;
+            this.asistio = asistio;
+        }
+
+        public String getCodigo() {
+            return codigo;
+        }
+
+        public String getNivelPractico() {
+            return nivelPractico;
+        }
+
+        public String getNombre() {
+            return nombre;
+        }
+
+        public String getRecursoExterno() {
+            return recursoExterno;
+        }
+
+        public String getDuracion() {
+            return duracion;
+        }
+
+        public String getFechaRealizacion() {
+            return fechaRealizacion;
+        }
+
+        public boolean isAsistio() {
+            return asistio;
+        }
+
+        @Override
+        public String toString() {
+            return "Código: " + codigo +
+                    ", Nivel: " + nivelPractico +
+                    ", Nombre: " + nombre +
+                    ", Recurso: " + recursoExterno +
+                    ", Duración: " + duracion +
+                    ", Fecha: " + fechaRealizacion +
+                    ", Asistió: " + (asistio ? "Sí" : "No");
+        }
+    }
+}
